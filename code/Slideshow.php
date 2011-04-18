@@ -13,17 +13,22 @@ class Slideshow extends DataObjectDecorator {
 		'Scroll vertical elastic' => "fx:'scrollVert',easing:'easeOutElastic'"
 	);
 	public function index() {
-		/*
-		 * include js only if there is more than one slide 
-		 */
+		Requirements::themedCSS('slideshow');
+		//include js only if there is more than one slide
 		if($this->MoreThanOneSlide()) {
-			Requirements::themedCSS('slideshow');
 			Requirements::javascript('jsparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.3 versions
-			Requirements::javascript('sapphire/thirdparty/jquery/jquery-packed.js');
+			Requirements::javascript('sapphire/thirdparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.4 prior to 2.4.4
+			Requirements::javascript('sapphire/thirdparty/jquery/jquery.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
-			Requirements::javascriptTemplate('slideshow/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
-		}
+			
+			//make it possible to override the init file by placing it in a javascript folder in a theme
+			if(Director::fileExists($this->ThemeDir().'/javascript/init_slideshow.js')) {
+				Requirements::javascriptTemplate($this->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
+			}
+			else {
+				Requirements::javascriptTemplate('slideshow/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
+			}		}
 		return array();
 	}
 	function extraStatics() {
