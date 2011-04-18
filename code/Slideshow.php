@@ -23,12 +23,13 @@ class Slideshow extends DataObjectDecorator {
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
 			
 			//make it possible to override the init file by placing it in a javascript folder in a theme
-			if(Director::fileExists($this->ThemeDir().'/javascript/init_slideshow.js')) {
-				Requirements::javascriptTemplate($this->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
+			if(Director::fileExists($this->owner->ThemeDir().'/javascript/init_slideshow.js')) {
+				Requirements::javascriptTemplate($this->owner->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
 			}
 			else {
 				Requirements::javascriptTemplate('slideshow/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
-			}		}
+			}		
+		}
 		return array();
 	}
 	function extraStatics() {
