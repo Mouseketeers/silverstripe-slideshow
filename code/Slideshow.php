@@ -12,23 +12,26 @@ class Slideshow extends DataObjectDecorator {
 		'Scroll horizontal elastic' => "fx:'scrollHorz',easing:'easeOutElastic'",
 		'Scroll vertical elastic' => "fx:'scrollVert',easing:'easeOutElastic'"
 	);
+	public static $enableHTMLContentEditor = true;
 	public function index() {
-		Requirements::themedCSS('slideshow');
-		//include js only if there is more than one slide
+		/*
+		 * include js only if there is more than one slide 
+		 */
 		if($this->MoreThanOneSlide()) {
+			Requirements::themedCSS('slideshow');
+			Requirements::block(SAPPHIRE_DIR .'/thirdparty/jquery/jquery.js'); // for compability with userforms
 			Requirements::javascript('jsparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.3 versions
-			Requirements::javascript('sapphire/thirdparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.4 prior to 2.4.4
-			Requirements::javascript('sapphire/thirdparty/jquery/jquery.min.js');
+			Requirements::javascript('sapphire/thirdparty/jquery/jquery-packed.js');
 			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
 			
-			//make it possible to override the init file by placing it in a javascript folder in a theme
+			//make it possible to override the init file by placing it in a javascript folder 
 			if(Director::fileExists($this->owner->ThemeDir().'/javascript/init_slideshow.js')) {
 				Requirements::javascriptTemplate($this->owner->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
 			}
 			else {
 				Requirements::javascriptTemplate('slideshow/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
-			}		
+			}
 		}
 		return array();
 	}
@@ -68,7 +71,7 @@ class Slideshow extends DataObjectDecorator {
 		/*
 		 * if this is a new page set defaults 
 		 */
-		 if($this->owner->Version == 1) {
+		if($this->owner->Version == 1) {
 			$this->set_defaults();
 		}
 		$image_manager = new ImageDataObjectManager (
@@ -87,7 +90,7 @@ class Slideshow extends DataObjectDecorator {
 		$fields->addFieldToTab(
 			'Root.Content.Settings', new LiteralField(
 				$name = 'SlideshowSettingsHeader',
-	   			$content = '<h3>'._t('Slideshow.SETTINGSHEADER', 'Slideshow Settings').'</h3>'
+	   			$content = '<br /><h3>'._t('Slideshow.SETTINGSHEADER', 'Slideshow Settings').'</h3>'
 			)
 		);
 		if (count(self::$effects) > 1) {
@@ -182,18 +185,26 @@ class Slideshow extends DataObjectDecorator {
 	 * set slideshow settings to equal the latest one saved in the same section
 	 */
 	public function set_defaults() {
-		if(!$this->owner->ParentID) return false;
+		$page = DataObject::get_one(
+			$caller_class = 'Page',
+			$where = 'ClassName=\''.$this->owner->ClassName.'\' AND `Page`.`ID` <> '.$this->owner->ID,
+			$cache = true,
+			$sort = 'LastEdited DESC'
+		);
 		$slideshow_statics = $this->extraStatics();
 		$sildeshow_db_fields = $slideshow_statics['db'];
-		$pagesInSection = DataObject::get('SiteTree','`SiteTree`.`ID` <> '.$this->owner->ID.' AND ParentID = '.$this->owner->ParentID,'LastEdited DESC');
-		if($pagesInSection) {
-			foreach($pagesInSection as $page) {
-				if($page->hasExtension('Slideshow')) {
-					foreach($sildeshow_db_fields as $key => $value) {
-						$this->owner->{$key} = $page->{$key};
-					}
-					break;	
-				}
+		if($page) {
+			foreach($sildeshow_db_fields as $key => $value) {
+				$this->owner->{$key} = $page->{$key};
+			}
+		}
+	}
+	static $has_written = false;
+	function onAfterWrite() {
+		if(!self::$has_written) {
+			self::$has_written = true;
+			if(isset($_POST['Update']) && $_POST['Update'] != 'page') {
+				$this->update_other_slideshows($_POST);
 			}
 		}
 	}
@@ -201,9 +212,9 @@ class Slideshow extends DataObjectDecorator {
 	/*
 	 *  Updates other slideshows with the current settings
 	 */
-	private function update_other_slideshows($record) {
+	private function update_other_slideshows($data) {
 		$filter = '`SiteTree`.`ID` <> '.$this->owner->ID;
-		if($record['Update'] == 'section') $filter .=  ' AND ParentID = '.$this->owner->ParentID;
+		if($data['Update'] == 'section') $filter .=  ' AND ParentID = '.$this->owner->ParentID;
 		$pages_to_be_updated = DataObject::get('SiteTree',$filter);
 		
 		$slideshow_statics = $this->extraStatics();
@@ -212,7 +223,7 @@ class Slideshow extends DataObjectDecorator {
 			if($page->hasExtension('Slideshow')) {
 				foreach($sildeshow_db_fields as $key => $value) {
 					if(isset($_POST[$key])) {
-						$page->{$key} = $record[$key];
+						$page->{$key} = $data[$key];
 					}
 				}
 				$page->writeToStage('Stage');
@@ -236,7 +247,7 @@ class Slideshow extends DataObjectDecorator {
 		$settings[] = ($this->owner->AutoPlay && $this->owner->SlideDuration) ? 'timeout: '.$this->owner->SlideDuration : 'timeout:0';
 		$settings[] = ($this->owner->TransitionDuration) ? 'speed:'.$this->owner->TransitionDuration : 'speed:0';
 		if ($this->owner->TransitionDurationOnUserEvent) $settings[] = 'fastOnEvent:'.$this->owner->TransitionDurationOnUserEvent;				
-		if ($this->owner->PauseOnHover) $settings[] = 'pause:1,pauseOnPagerHover:1';
+		if ($this->owner->PauseOnHover) $settings[] = 'pauseOnPagerHover:1';
 		if (!$this->owner->Loop) $settings[] = 'nowrap:1';
 		if($this->owner->NextPrevButtons || $this->owner->SlideButtons) $settings[] = 'pagerAnchorBuilder: function(idx, slide) { return \'.slideButton:eq(\' + idx + \')\' }';
 		if ($this->owner->NextPrevButtons) $settings[] = 'prev:\'#PrevButton\',next:\'#NextButton\',pager:\'#SlideButtons\'';
