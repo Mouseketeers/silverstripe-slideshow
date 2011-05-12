@@ -14,17 +14,15 @@ class Slideshow extends DataObjectDecorator {
 	);
 	public static $enableHTMLContentEditor = true;
 	public function index() {
-		/*
-		 * include js only if there is more than one slide 
-		 */
-		if($this->MoreThanOneSlide()) {
-			Requirements::themedCSS('slideshow');
-			Requirements::block(SAPPHIRE_DIR .'/thirdparty/jquery/jquery.js'); // for compability with userforms
-			Requirements::javascript('jsparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.3 versions
-			Requirements::javascript('sapphire/thirdparty/jquery/jquery-packed.js');
+		Requirements::themedCSS('slideshow');
+		//include js only if there is more than one slide 
+		if($this->owner->MoreThanOneSlide()) {
+			Requirements::javascript(SAPPHIRE_DIR.'/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.3 versions
+			Requirements::javascript(SAPPHIRE_DIR.'/thirdparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.4 prior to 2.4.4
+			Requirements::javascript(SAPPHIRE_DIR.'/thirdparty/jquery/jquery.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
-			
+						
 			//make it possible to override the init file by placing it in a javascript folder 
 			if(Director::fileExists($this->owner->ThemeDir().'/javascript/init_slideshow.js')) {
 				Requirements::javascriptTemplate($this->owner->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
@@ -74,6 +72,7 @@ class Slideshow extends DataObjectDecorator {
 		if($this->owner->Version == 1) {
 			$this->set_defaults();
 		}
+		$fields->addFieldToTab('Root.Content.Slideshow', new TabSet('SlideshowTabs', new Tab('Slides'), new Tab('Settings'))); 
 		$image_manager = new ImageDataObjectManager (
 			$this->owner,
 			'SlideshowSlides',
@@ -82,20 +81,14 @@ class Slideshow extends DataObjectDecorator {
 			array(),
 			'getCMSFields_forPopup'
 		);
-		$fields->addFieldToTab('Root.Content.Slideshow',$image_manager);
+		$fields->addFieldToTab('Root.Content.Slideshow.SlideshowTabs.Slides',$image_manager);
 		
 		/*
 		 * settings
 		 */
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new LiteralField(
-				$name = 'SlideshowSettingsHeader',
-	   			$content = '<br /><h3>'._t('Slideshow.SETTINGSHEADER', 'Slideshow Settings').'</h3>'
-			)
-		);
 		if (count(self::$effects) > 1) {
 			$fields->addFieldToTab(
-				'Root.Content.Settings', new DropdownField(
+				'Root.Content.Slideshow.SlideshowTabs.Settings', new DropdownField(
 					$name = 'SlideEffect',
 					$title = _t('Slideshow.EFFECT', 'Slide effect'),
 					$source = array_combine(
@@ -107,77 +100,61 @@ class Slideshow extends DataObjectDecorator {
 		}
 		else {
 			$fields->addFieldToTab(
-				'Root.Content.Settings', new HiddenField(
+				'Root.Content.Slideshow.SlideshowTabs.Settings', new HiddenField(
 					$name = 'SlideEffect',
 					$title = 'Slide Effect',
 					$value = key(self::$effects)
 				)
 			);
 		}
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new TextField(
-	  			$name = 'SlideDuration',
-	  			$title = _t('Slideshow.SLIDEDURATIOM', 'Duration of Each Slide (milliseconds)')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new TextField(
-	  			$name = 'TransitionDuration',
-	  			$title =  _t('Slideshow.TRANSITIONDURATION', 'Duration of Transition Between Slides (milliseconds)')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new TextField(
-	  			$name = 'TransitionDurationOnUserEvent',
-	  			$title = _t('Slideshow.TRANSITIONDURATIONONUSEREVENT', 'Duration of transition when invoked by users (milliseconds)')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'AutoPlay',
-	  			$title = _t('Slideshow.AUTOPLAY', 'Start slideshow automatically')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'Loop',
-	  			$title = _t('Slideshow.LOOP', 'Loop slides')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'PauseOnHover',
-	  			$title = _t('Slideshow.PAUSEONHOVER', 'Pause the slideshow when the mouse hovers over it')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'NextPrevButtons',
-	  			$title = _t('Slideshow.NEXTPREVBUTTONS', 'Show Next and Previous Buttons')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'SlideButtons',
-	  			$title = _t('Slideshow.SLIDEBUTTONS', 'Show Links to Slides')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new CheckboxField(
-	  			$name = 'ShowThumbnails',
-	  			$title = _t('Slideshow.SHOWTHUMBNAILS', 'Show thumbnails of slide images')
-			)
-		);
-		$fields->addFieldToTab(
-			'Root.Content.Settings', new OptionsetField(
-	  			$name = 'Update',
-	  			$title = _t('Slideshow.UPDATE','Update slideshows'),
-	  			$source = array(
-	  				'page' => 'Apply to this page only',
-	  				'section' => 'Apply to all slideshows in this section',
-	  				'all' => 'Apply to all slideshows on this site'
-	  			),
-	  			$value = 'page'
+		$fields->addFieldsToTab('Root.Content.Slideshow.SlideshowTabs.Settings', 
+			array(
+				new TextField(
+		  			$name = 'SlideDuration',
+		  			$title = _t('Slideshow.SLIDEDURATIOM', 'Duration of Each Slide (milliseconds)')
+				),
+				new TextField(
+		  			$name = 'TransitionDuration',
+		  			$title =  _t('Slideshow.TRANSITIONDURATION', 'Duration of Transition Between Slides (milliseconds)')
+				),
+				new TextField(
+		  			$name = 'TransitionDurationOnUserEvent',
+		  			$title = _t('Slideshow.TRANSITIONDURATIONONUSEREVENT', 'Duration of transition when invoked by users (milliseconds)')
+				),
+				new CheckboxField(
+		  			$name = 'AutoPlay',
+		  			$title = _t('Slideshow.AUTOPLAY', 'Start slideshow automatically')
+				),
+				new CheckboxField(
+		  			$name = 'Loop',
+		  			$title = _t('Slideshow.LOOP', 'Loop slides')
+				),
+				new CheckboxField(
+		  			$name = 'PauseOnHover',
+		  			$title = _t('Slideshow.PAUSEONHOVER', 'Pause the slideshow when the mouse hovers over it')
+				),
+				new CheckboxField(
+		  			$name = 'NextPrevButtons',
+		  			$title = _t('Slideshow.NEXTPREVBUTTONS', 'Show Next and Previous Buttons')
+				),
+				new CheckboxField(
+		  			$name = 'SlideButtons',
+		  			$title = _t('Slideshow.SLIDEBUTTONS', 'Show Links to Slides')
+				),
+				new CheckboxField(
+		  			$name = 'ShowThumbnails',
+		  			$title = _t('Slideshow.SHOWTHUMBNAILS', 'Show thumbnails of slide images')
+				),
+				new OptionsetField(
+		  			$name = 'UpdateSlideshows',
+		  			$title = _t('Slideshow.UPDATE','Update slideshows'),
+		  			$source = array(
+		  				'page' => 'Apply to this page only',
+		  				'section' => 'Apply to all slideshows in this section',
+		  				'site' => 'Apply to all slideshows on this site'
+		  			),
+		  			$value = 'page'
+				)
 			)
 		);
 	}
@@ -185,10 +162,11 @@ class Slideshow extends DataObjectDecorator {
 	 * set slideshow settings to equal the latest one saved in the same section
 	 */
 	public function set_defaults() {
+		//FIX: This doesn't look too good. What the hell was I thinking of?
 		$page = DataObject::get_one(
-			$caller_class = 'Page',
-			$where = 'ClassName=\''.$this->owner->ClassName.'\' AND `Page`.`ID` <> '.$this->owner->ID,
-			$cache = true,
+			$caller_class = $this->owner->ClassName,
+			$where = '`'.$this->owner->ClassName.'`.`ID` <> '.$this->owner->ID,
+			$cache = '',
 			$sort = 'LastEdited DESC'
 		);
 		$slideshow_statics = $this->extraStatics();
@@ -203,7 +181,7 @@ class Slideshow extends DataObjectDecorator {
 	function onAfterWrite() {
 		if(!self::$has_written) {
 			self::$has_written = true;
-			if(isset($_POST['Update']) && $_POST['Update'] != 'page') {
+			if(isset($_POST['UpdateSlideshows']) && $_POST['UpdateSlideshows'] != 'page') {
 				$this->update_other_slideshows($_POST);
 			}
 		}
@@ -214,7 +192,7 @@ class Slideshow extends DataObjectDecorator {
 	 */
 	private function update_other_slideshows($data) {
 		$filter = '`SiteTree`.`ID` <> '.$this->owner->ID;
-		if($data['Update'] == 'section') $filter .=  ' AND ParentID = '.$this->owner->ParentID;
+		if($data['UpdateSlideshows'] == 'section') $filter .=  ' AND ParentID = '.$this->owner->ParentID;
 		$pages_to_be_updated = DataObject::get('SiteTree',$filter);
 		
 		$slideshow_statics = $this->extraStatics();
