@@ -13,6 +13,7 @@ class Slideshow extends DataObjectDecorator {
 		'Scroll vertical elastic' => "fx:'scrollVert',easing:'easeOutElastic'"
 	);
 	public static $enableHTMLContentEditor = true;
+	public static $slideshow_js_file = 'slideshow/javascript/init_slideshow.js';
 	public function index() {
 		Requirements::themedCSS('slideshow');
 		//include js only if there is more than one slide 
@@ -22,14 +23,10 @@ class Slideshow extends DataObjectDecorator {
 			Requirements::javascript(SAPPHIRE_DIR.'/thirdparty/jquery/jquery.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
-						
-			//make it possible to override the init file by placing it in a javascript folder 
-			if(Director::fileExists($this->owner->ThemeDir().'/javascript/init_slideshow.js')) {
-				Requirements::javascriptTemplate($this->owner->ThemeDir().'/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
-			}
-			else {
-				Requirements::javascriptTemplate('slideshow/javascript/init_slideshow.js', array('Settings' => $this->owner->Settings()));
-			}
+			Requirements::javascriptTemplate(self::$slideshow_js_file, array(
+				'Settings' => $this->owner->Settings(),
+				'ClassName' => $this->owner->ClassName
+			));
 		}
 		return array();
 	}
@@ -159,10 +156,9 @@ class Slideshow extends DataObjectDecorator {
 		);
 	}
 	/*
-	 * set slideshow settings to equal the latest one saved in the same section
+	 * set slideshow settings to equal the latest saved of the same type
 	 */
 	public function set_defaults() {
-		//FIX: This doesn't look too good. What the hell was I thinking of?
 		$page = DataObject::get_one(
 			$caller_class = $this->owner->ClassName,
 			$where = '`'.$this->owner->ClassName.'`.`ID` <> '.$this->owner->ID,
@@ -217,7 +213,7 @@ class Slideshow extends DataObjectDecorator {
 	}
 	public function set_custom_effects($effects) {
 		self::$effects = $effects;
-	}	
+	}
 	/*
 	 * returns jquery cycle settings outputted in init_slideshow.js
 	 */
