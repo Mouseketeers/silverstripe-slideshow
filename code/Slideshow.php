@@ -12,9 +12,12 @@ class Slideshow extends DataObjectDecorator {
 		'Scroll horizontal elastic' => "fx:'scrollHorz',easing:'easeOutElastic'",
 		'Scroll vertical elastic' => "fx:'scrollVert',easing:'easeOutElastic'"
 	);
-	public static $enableHTMLContentEditor = true;
-	public static $slideshow_js_file = 'slideshow/javascript/init_slideshow.js';
-	public function index() {
+	public static $enableHTMLContentEditor = false;
+	public function enable_html_content_editor() {
+		self::$enableHTMLContentEditor = true;
+	}
+	//public static $slideshow_js_file = 'slideshow/javascript/init_slideshow.js';
+	/*public function index() {
 		Requirements::themedCSS('slideshow');
 		//include js only if there is more than one slide 
 		if($this->owner->MoreThanOneSlide()) {
@@ -24,12 +27,12 @@ class Slideshow extends DataObjectDecorator {
 			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
 			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
 			Requirements::javascriptTemplate(self::$slideshow_js_file, array(
-				'Settings' => $this->owner->Settings(),
+				'Settings' => $this->owner->slideshowSettings(),
 				'ClassName' => $this->owner->ClassName
 			));
 		}
 		return array();
-	}
+	}*/
 	function extraStatics() {
 		return array(
 			'has_many' => array(
@@ -83,7 +86,7 @@ class Slideshow extends DataObjectDecorator {
 		/*
 		 * settings
 		 */
-		if (count(self::$effects) > 1) {
+		if(count(self::$effects) > 1) {
 			$fields->addFieldToTab(
 				'Root.Content.Slideshow.SlideshowTabs.Settings', new DropdownField(
 					$name = 'SlideEffect',
@@ -155,6 +158,14 @@ class Slideshow extends DataObjectDecorator {
 			)
 		);
 	}
+	public function extend($class_names) {
+		//self::$owner_class_names = $class_names;
+		if(is_string($class_names)) $class_names = array($class_names);
+		foreach($class_names as $class_name) {
+			DataObject::add_extension($class_name, 'Slideshow');
+			Object::add_extension($class_name.'_Controller', 'Slideshow_Controller');
+		}
+	}
 	/*
 	 * set slideshow settings to equal the latest saved of the same type
 	 */
@@ -208,16 +219,16 @@ class Slideshow extends DataObjectDecorator {
 	/*
 	 * function for adding custom effects
 	 */
-	public function set_effects($effects) {
+	/*public function set_effects($effects) {
 		self::$effects = $effects;
-	}
+	}*/
 	public function set_custom_effects($effects) {
 		self::$effects = $effects;
 	}
 	/*
 	 * returns jquery cycle settings outputted in init_slideshow.js
 	 */
-	public function Settings() {
+	public function settings() {
 		$settings[] = ($this->owner->AutoPlay && $this->owner->SlideDuration) ? 'timeout: '.$this->owner->SlideDuration : 'timeout:0';
 		$settings[] = ($this->owner->TransitionDuration) ? 'speed:'.$this->owner->TransitionDuration : 'speed:0';
 		if ($this->owner->TransitionDurationOnUserEvent) $settings[] = 'fastOnEvent:'.$this->owner->TransitionDurationOnUserEvent;				
@@ -230,10 +241,25 @@ class Slideshow extends DataObjectDecorator {
 		$settings_string =  implode(',', $settings);
 		return $settings_string;
 	}
-	public function MoreThanOneSlide() {
-		return ($this->owner->SlideshowSlides()->Count() > 1);
+}
+class Slideshow_Controller extends Extension {
+	public static $js_init_file = 'slideshow/javascript/init_slideshow.js';
+	function onAfterInit() {
+		Requirements::themedCSS('slideshow');
+		//include js only if there is more than one slide 
+		if($this->owner->SlideshowSlides()->Count() > 1) {
+			Requirements::javascript(SAPPHIRE_DIR.'/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.3 versions
+			Requirements::javascript(SAPPHIRE_DIR.'/thirdparty/jquery/jquery-packed.js'); // for backward compality with SilverStripe 2.4 prior to 2.4.4
+			Requirements::javascript(SAPPHIRE_DIR.'/thirdparty/jquery/jquery.min.js');
+			Requirements::javascript('slideshow/javascript/jquery.cycle.all.min.js');
+			Requirements::javascript('slideshow/javascript/jquery.easing.1.2.js');
+			Requirements::javascriptTemplate(self::$js_init_file, array(
+				'Settings' => $this->owner->settings(),
+				'ClassName' => $this->owner->ClassName
+			));
+		}
 	}
-	public function FirstSlide() {
-		return DataObject::get_one('SlideshowSlide','PageID ='.$this->owner->ID,'SortOrder');
+	public function set_custom_js_init_file($file_path = '') {
+		if($file) self::$js_init_file = $file_path;
 	}
 }
