@@ -8,6 +8,9 @@ class SlideshowSlide extends DataObject {
 		'SlideImage' => 'Image',
 		'Link' => 'SiteTree'
 	);
+	function canDelete() {
+		return Permission::check('CMS_ACCESS_CMSMain');
+	}
 	function getCMSFields_forPopup() {
 		$fields = new FieldSet();
 		$fields->push(new ImageUploadField('SlideImage', _t('SlideshowSlide.IMAGE','Image')));
