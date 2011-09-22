@@ -8,15 +8,12 @@
 
 2. To enable the slideshow on all pages, add the following to your mysite/_config.php file:
 
-Slideshow::extend('Page'); (the extend-function will extend the classes Page and Page_Controller)
+DataObject::add_extension('Page', 'Slideshow');
 
 To enable the slideshow on specific pages, for example your home page, add the following to your mysite/_config.php file:
 
-Slideshow::extend('HomePage');
+DataObject::add_extension('HomePage', 'Slideshow');
 
-If you want to extend multiple page types, use:
-
-Slideshow::extend('HomePage', 'ProductPage');
 
 3. Build the database (e.g. http://localhost/mysite/dev/build)
 
@@ -55,5 +52,5 @@ For easing effects look her:
 < http://gsgd.co.uk/sandbox/jquery/easing/ >
 
 If you want to use a custom javascript initialization file instead of javascript/init_slideshow.js use:
-Slideshow_Controller::set_custom_js_init_file($file_path)
+Slideshow::$slideshow_js_file = [path to your js file];
 
