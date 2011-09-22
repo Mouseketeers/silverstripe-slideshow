@@ -4,13 +4,15 @@
 		<div id="SlideshowSlides">
 		<% control SlideshowSlides %>
 			<% if Content %>
-			<div class="slide" <% if First != 1 %>style="display:none"<% end_if %>>
+			<div id="Slide{$Pos}" class="slide">
 			<% end_if %>
-				<% control SlideImage.SetWidth(700) %>
-				<img src="$URL" width="$Width" height="$Height" alt="" <% if PageLink %> onclick="location.href='$PageLink.URLSegment'" style="cursor:pointer"<% end_if %> />
+				<% control SlideImage.SetWidth(600) %>
+				<img id="SlideImage{$Pos}" src="$URL" width="$Width" height="$Height" alt="$Content" 
 				<% end_control %> 
+				<% if Link %>onclick="location.href='$Link.URLSegment'" style="cursor:pointer" <% end_if %>
+				/>
 			<% if Content %>
-				<div class="content"><span class="description">$Content</span></div>
+				<div class="content typography"><span class="description">$Content</span></div>
 			</div>
 			<% end_if %>
 		<% end_control %>

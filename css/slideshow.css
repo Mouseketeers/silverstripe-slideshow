@@ -19,12 +19,7 @@
 	text-align:center;
 }
 #SlideButtons {
-	/*float:left;*/
 	display:inline-block;
-}
-.slideButton {
-	display:inline-block;
-	float:left;
 }
 #PrevButton, #NextButton, .slideButton span, #SlideCounter {
 	display:inline-block;
