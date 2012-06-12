@@ -79,6 +79,7 @@ class Slideshow extends DataObjectDecorator {
 			array(),
 			'getCMSFields_forPopup'
 		);
+		$image_manager->copyOnImport = false;
 		$fields->addFieldToTab('Root.Content.Slideshow.SlideshowTabs.Slides',$image_manager);
 		
 		/*
