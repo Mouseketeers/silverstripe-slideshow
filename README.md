@@ -1,4 +1,4 @@
-# SilverStripe Slidshow Module
+# SilverStripe Slideshow Module
 Adds slideshow based on the jQuery Cycle Plugin < http://jquery.malsup.com/cycle/ > to pages
 
 ## Maintainer Contact

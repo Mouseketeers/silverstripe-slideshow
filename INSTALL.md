@@ -48,7 +48,7 @@ array( [title of effect] => [JQuery Cycle effect setting] );
 Look here for inspiration for making your very own JQuery Cycle effects:
 < http://jquery.malsup.com/cycle/browser.html >
 
-For easing effects look her:
+For easing effects look here:
 < http://gsgd.co.uk/sandbox/jquery/easing/ >
 
 If you want to use a custom javascript initialization file instead of javascript/init_slideshow.js use:
