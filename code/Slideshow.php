@@ -70,7 +70,16 @@ class Slideshow extends DataObjectDecorator {
 		if($this->owner->Version == 1) {
 			$this->set_defaults();
 		}
-		$fields->addFieldToTab('Root.Content.Slideshow', new TabSet('SlideshowTabs', new Tab('Slides'), new Tab('Settings'))); 
+		
+		$tabSlides = new Tab('Slides');
+		$tabSlides->setTitle(_t('Slideshow.SLIDESTABTITLE','Slides'));
+		$tabSettings = new Tab('Settings');
+		$tabSettings->setTitle(_t('Slideshow.SETTINGSTABTITLE','Settings'));
+		$tabSlideShow = new TabSet('SlideshowTabs', $tabSlides, $tabSettings);
+		$tabSlideShow->setTitle(_t('Slideshow.SLIDESHOWTABTITLE','Slideshow'));
+		
+		$fields->addFieldToTab('Root.Content', $tabSlideShow);
+		//$fields->addFieldToTab('Root.Content.Slideshow', new TabSet('SlideshowTabs', $tabSlides, $tabSettings));
 		$image_manager = new ImageDataObjectManager (
 			$this->owner,
 			'SlideshowSlides',
@@ -80,14 +89,14 @@ class Slideshow extends DataObjectDecorator {
 			'getCMSFields_forPopup'
 		);
 		$image_manager->copyOnImport = false;
-		$fields->addFieldToTab('Root.Content.Slideshow.SlideshowTabs.Slides',$image_manager);
+		$fields->addFieldToTab('Root.Content.SlideshowTabs.Slides',$image_manager);
 		
 		/*
 		 * settings
 		 */
 		if (count(self::$effects) > 1) {
 			$fields->addFieldToTab(
-				'Root.Content.Slideshow.SlideshowTabs.Settings', new DropdownField(
+				'Root.Content.SlideshowTabs.Settings', new DropdownField(
 					$name = 'SlideEffect',
 					$title = _t('Slideshow.EFFECT', 'Slide effect'),
 					$source = array_combine(
@@ -99,14 +108,14 @@ class Slideshow extends DataObjectDecorator {
 		}
 		else {
 			$fields->addFieldToTab(
-				'Root.Content.Slideshow.SlideshowTabs.Settings', new HiddenField(
+				'Root.Content.SlideshowTabs.Settings', new HiddenField(
 					$name = 'SlideEffect',
 					$title = 'Slide Effect',
 					$value = key(self::$effects)
 				)
 			);
 		}
-		$fields->addFieldsToTab('Root.Content.Slideshow.SlideshowTabs.Settings', 
+		$fields->addFieldsToTab('Root.Content.SlideshowTabs.Settings', 
 			array(
 				new TextField(
 		  			$name = 'SlideDuration',
@@ -148,9 +157,9 @@ class Slideshow extends DataObjectDecorator {
 		  			$name = 'UpdateSlideshows',
 		  			$title = _t('Slideshow.UPDATE','Update slideshows'),
 		  			$source = array(
-		  				'page' => 'Apply to this page only',
-		  				'section' => 'Apply to all slideshows in this section',
-		  				'site' => 'Apply to all slideshows on this site'
+		  				'page' => _t('Slideshow.UPDATEPAGEONLY','Apply to this page only'),
+		  				'section' => _t('Slideshow.UPDATESECTION','Apply to all slideshows in this section'),
+		  				'site' => _t('Slideshow.UPDATEALL','Apply to all slideshows on this site')
 		  			),
 		  			$value = 'page'
 				)
