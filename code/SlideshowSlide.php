@@ -20,8 +20,8 @@ class SlideshowSlide extends DataObject {
 		else {
 			$fields->push(new TextareaField('Content', _t('SlideshowSlide.CONTENT','Text'), 'Text'));
 		}
-		$PageDropDown = new SimpleTreeDropdownField('LinkID', 'Link to page');
-		$PageDropDown->setEmptyString('-- None --');
+		$PageDropDown = new SimpleTreeDropdownField('LinkID', _t('SlideshowSlide.LINK','Link to page'));
+		$PageDropDown->setEmptyString(_t('SlideshowSlide.EMPTYSTRING','-- None --'));
 		$fields->push($PageDropDown);
    		return $fields;
 	}
