@@ -1,39 +1,24 @@
-<% if SlideshowSlides %>
-<div id="SlideshowContainer">
-	<div id="Slideshow">
-		<div id="SlideshowSlides">
-		<% control SlideshowSlides %>
-			<% if Content %>
-			<div id="Slide{$Pos}" class="slide">
-			<% end_if %>
-				<% control SlideImage.SetWidth(600) %>
-				<img id="SlideImage{$Pos}" src="$URL" width="$Width" height="$Height" alt="$Content" 
-				<% end_control %> 
-				<% if Link %>onclick="location.href='$Link.URLSegment'" style="cursor:pointer" <% end_if %>
-				/>
-			<% if Content %>
-				<div class="content typography"><span class="description">$Content</span></div>
-			</div>
-			<% end_if %>
+<%-- require javascript(sapphire/thirdparty/jquery/jquery-packed.js) --%>
+<% require javascript(slideshow/javascript/jquery.cycle2.min.js) %>
+<% require javascript(slideshow/javascript/jquery.cycle2.caption2.min.js) %>
+<% require javascript(slideshow/javascript/jquery.easing.1.3.js) %>
+<div class="cycle-slideshow" 
+	$Settings
+	data-cycle-prev=".prev"
+	data-cycle-next=".next"
+	data-cycle-caption-plugin=caption2
+	data-cycle-pager=".pager > .cycle-pager"
+	data-cycle-pager-template="<a href=#> {{slideNum}} </a>"
+	data-cycle-pager-active-class="active"
+	>
+	<% control SlideshowSlides %>
+		<% control SlideImage %>
+		<img id="slide-image-{$Pos}" src="$URL"
 		<% end_control %>
-		</div>
-		<% if MoreThanOneSlide %>
-		<div id="SlideshowControls">
-			<% if NextPrevButtons %>
-			<span id="PrevButton"><span><</span></span>
-			<% end_if %>
-			<% if SlideButtons %>
-			<span id="SlideButtons">
-				<% control SlideshowSlides %>
-				<span class="slideButton"><% if Top.ShowThumbnails %>$SlideImage.SetWidth(80)<% else %><span>$Pos</span><% end_if %></span>
-				<% end_control %>
-			</span>
-			<% end_if %>
-			<% if NextPrevButtons %>
-			<span id="NextButton"><span>></span></span>
-			<% end_if %>
-		</div>
-		<% end_if %>
-	</div>
+			<% if Title %>data-cycle-title="$Title"<% end_if %>
+			<% if Content %>data-cycle-desc="$Content.XML"<% end_if %>
+		/>
+	<% end_control %>
+	<div class="cycle-overlay"></div>
+	<div class="large-12 columns pager" style="text-align:center"><a href=# class="prev"><</a><span class="cycle-pager"></span><a href=# class="next">></a></div>
 </div>
-<% end_if %>
