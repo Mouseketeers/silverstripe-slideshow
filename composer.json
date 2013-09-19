@@ -1,0 +1,19 @@
+{
+	"name": "mouseketeers/slideshow",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "slideshow", "cycle" "cycle2"],
+	"description": "SilverStripe Slideshow module based on jQuery Cycle2",
+	"license": "BSD-3-Clause",
+	"authors": [
+	{
+			"name": "Henrik Olsen",
+			"homepage": "http://www.mouseketeers.dk",
+			"email": "henrik@mouseketeers.dk"
+		}
+	
+	],
+	"require": {
+		"silverstripe/framework": "2.4.*",
+		"silverstripe/cms": "2.4.*"
+	}
+}

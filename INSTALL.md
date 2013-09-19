@@ -17,40 +17,24 @@ DataObject::add_extension('HomePage', 'Slideshow');
 
 3. Build the database (e.g. http://localhost/mysite/dev/build)
 
+4. Add <% include Slideshow %> to your template
+
 ## Configuration options
 
 To override the default effects with your own, customize this and add it to your mysite/_config.php file:
 
 Slideshow::set_custom_effects(
 	array(
-		'None' => "fx:'none'",
-		'Fade over' => "fx:'fade'",
-		'Fade in / out' => "sync:0,fx:'fade'",
-		'Scroll horizontal' => "fx:'scrollHorz',easing:'easeOutQuart'",
-		'Scroll vertical' => "fx:'scrollVert',easing:'easeOutQuart'",
-		'Scroll horizontal with bounce' => "fx:'scrollHorz',easing:'easeOutBounce'",
-		'Scroll vertical with bounce' => "fx:'scrollVert',easing:'easeOutBounce'",
-		'Scroll horizontal elastic' => "fx:'scrollHorz',easing:'easeOutElastic'",
-		'Scroll vertical elastic' => "fx:'scrollVert',easing:'easeOutElastic'",
-		'Scroll left/down/right/up' => "fx:'scrollLeft,scrollDown,scrollRight,scrollUp',easing:'easeInBack'",
-		'Turn down (images only)' => "fx:'turnDown'",
-		'Turn left (images only)' => "fx:'leftDown'",
-		'Uncover, sliding right (images only)' => "fx:'uncover',sync:0",
-		'Zoom in/out (images only)' => "fx:'zoom',sync:0",
-		'Zoom in elastic / Zoom out with a bounce out (images only)' => "fx:'zoom',speedIn:2000,speedOut:1000,easeIn:'easeOutElastic',easeOut:'easeInOutBack',sync:0",
-		'Random (images only)' => "fx:'all'"
+		'None' => 'data-cycle-fx="none"',
+		'Fade' => 'data-cycle-fx="fade"',
+		'Fade in / out' => 'data-cycle-fx="fade" data-cycle-sync="false"',
+		'Scroll horizontal' => 'data-cycle-fx="scrollHorz" data-cycle-easing="easeOutQuart"',
+		'Scroll horizontal with bounce' => 'data-cycle-fx="scrollHorz" data-cycle-easing="easeOutBounce"',
+		'Scroll horizontal with elastic' => 'data-cycle-fx="scrollHorz" data-cycle-easing="easeOutElastic"'
 	)
 );
 
 The syntax of the array fed to set_custom_effects() is as follows:
 array( [title of effect] => [JQuery Cycle effect setting] );
 
-Look here for inspiration for making your very own JQuery Cycle effects:
-< http://jquery.malsup.com/cycle/browser.html >
-
-For easing effects look here:
-< http://gsgd.co.uk/sandbox/jquery/easing/ >
-
-If you want to use a custom javascript initialization file instead of javascript/init_slideshow.js use:
-Slideshow::$slideshow_js_file = [path to your js file];
 

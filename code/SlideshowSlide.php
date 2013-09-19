@@ -1,7 +1,8 @@
 <?php
 class SlideshowSlide extends DataObject {
 	static $db = array(
-   		'Content' => 'HTMLText'
+		'Title' => 'Varchar(255)',
+		'Content' => 'HTMLText'
 	);
 	static $has_one = array (
 		'Page' => 'Page',
@@ -13,6 +14,7 @@ class SlideshowSlide extends DataObject {
 	}
 	function getCMSFields_forPopup() {
 		$fields = new FieldSet();
+		$fields->push(new TextField('Title', _t('SlideshowSlide.TITLE','Title'), 'Title'));
 		$fields->push(new ImageUploadField('SlideImage', _t('SlideshowSlide.IMAGE','Image')));
 		if (Slideshow::$enableHTMLContentEditor) {
 			$fields->push(new SimpleTinyMCEField('Content', _t('SlideshowSlide.CONTENT','Text'), 'Text'));
@@ -23,6 +25,7 @@ class SlideshowSlide extends DataObject {
 		$PageDropDown = new SimpleTreeDropdownField('LinkID', _t('SlideshowSlide.LINK','Link to page'));
 		$PageDropDown->setEmptyString(_t('SlideshowSlide.EMPTYSTRING','-- None --'));
 		$fields->push($PageDropDown);
-   		return $fields;
+		$fields->push( new LiteralField('DOM-fix','<div style="height:35px">&nbsp;</div>'));
+		return $fields;
 	}
 }
