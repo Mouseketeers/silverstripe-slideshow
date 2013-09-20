@@ -1,7 +1,7 @@
 {
 	"name": "mouseketeers/slideshow",
 	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "slideshow", "cycle" "cycle2"],
+	"keywords": ["silverstripe", "slideshow", "cycle", "cycle2"],
 	"description": "SilverStripe Slideshow module based on jQuery Cycle2",
 	"license": "BSD-3-Clause",
 	"authors": [
