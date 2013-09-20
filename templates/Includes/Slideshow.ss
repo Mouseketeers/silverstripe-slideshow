@@ -26,7 +26,8 @@
 			<% if Link %>onclick="location.href='$Link.URLSegment'" style="cursor:pointer" <% end_if %>
 		/>
 	<% end_control %>
-
+	<% if MoreThanOneSlide %>
 	<div style="text-align:center"><a href=# class="prev"><</a><span class="pager"></span><a href=# class="next">></a></div>
+	<% end_if %>
 </div>
 <% end_if %>
