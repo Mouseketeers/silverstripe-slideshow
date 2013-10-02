@@ -38,6 +38,10 @@ class Slideshow extends DataObjectDecorator {
 
 	function updateCMSFields(&$fields){
 		/*
+		* don't want slideshow on a redirector page
+		*/
+		if($this->owner->ClassName == 'RedirectorPage') return $fields;
+		/*
 		 * if this is a new page set defaults 
 		 */
 		if($this->owner->Version == 1) {
