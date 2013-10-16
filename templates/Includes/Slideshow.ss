@@ -1,5 +1,5 @@
 <% if SlideshowSlides %>
-<%-- require javascript(sapphire/thirdparty/jquery/jquery-packed.js) --%>
+<% require javascript(http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js) %>
 <% require javascript(slideshow/javascript/jquery.cycle2.min.js) %>
 <% require javascript(slideshow/javascript/jquery.cycle2.caption2.min.js) %>
 <% require javascript(slideshow/javascript/jquery.cycle2.swipe.min.js) %>
