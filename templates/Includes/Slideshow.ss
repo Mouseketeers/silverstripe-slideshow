@@ -23,8 +23,8 @@
 		<% control SlideImage %>
 		<img id="slide-image-{$Pos}" class="slide" src="$URL"
 		<% end_control %>
-			<% if Title %>data-title="$Title.XML"<% end_if %>
-			<% if Content %>data-cycle-desc="$Content.XML"<% end_if %>
+			data-cycle-title="$Title.XML"
+			data-cycle-desc="$Content.XML"
 			<% if Link %>onclick="location.href='$Link.URLSegment'" style="cursor:pointer" <% end_if %>
 		/>
 	<% end_control %>
