@@ -3,6 +3,7 @@
 <% require javascript(slideshow/javascript/jquery.cycle2.min.js) %>
 <% require javascript(slideshow/javascript/jquery.cycle2.caption2.min.js) %>
 <% require javascript(slideshow/javascript/jquery.cycle2.swipe.min.js) %>
+<% require javascript(slideshow/javascript/ios6fix.js) %>
 <% require javascript(slideshow/javascript/jquery.easing.1.3.js) %>
 <div class="cycle-slideshow" 
 	$Settings
