@@ -15,6 +15,7 @@
 	data-cycle-overlay-template="<h3>{{title}}</h3><p>{{desc}}</p>"
 	data-cycle-pager-active-class="active"
 	data-cycle-swipe="true"
+	data-cycle-log="false"
 	>
 	<div class="cycle-overlay"></div>
 	<% control SlideshowSlides %>
